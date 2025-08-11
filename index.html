@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>A Star Marketing</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;700&display=swap');
+
+  /* Reset and base */
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0;
+    font-family: 'Quicksand', sans-serif;
+    background: #fafafa;
+    color: #222;
+    line-height: 1.6;
+    transition: background-color 0.4s, color 0.4s;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+  h1, h2, h3 {
+    margin: 0 0 12px 0;
+    font-weight: 700;
+    color: #3c3a36;
+  }
+  h1 {
+    font-size: 2.4rem;
+    letter-spacing: 0.04em;
+  }
+  h2 {
+    font-size: 1.8rem;
+    margin-top: 40px;
+    border-bottom: 2px solid #d4af37;
+    padding-bottom: 6px;
+  }
+  h3 {
+    font-size: 1.2rem;
+    color: #666;
+  }
+  p {
+    margin: 8px 0 20px;
+    max-width: 700px;
+  }
+  /* Logo Container */
+  #logo-container {
+    margin-bottom: 40px;
+  }
+  svg {
+    width: 300px;
+    height: auto;
+    display: block;
+  }
+
+  /* Theme toggle */
+  #themeToggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: transparent;
+    border: 2px solid #d4af37;
+    border-radius: 25px;
+    width: 50px;
+    height: 26px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 2px 4px;
+    transition: background-color 0.4s, border-color 0.4s;
+  }
+  #themeToggle:focus {
+    outline: none;
+    box-shadow: 0 0 6px #d4af37;
+  }
+  #themeToggle .toggle-circle {
+    background: #d4af37;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    transition: transform 0.3s ease;
+  }
+  body.dark #themeToggle {
+    border-color: #eee;
+    background-color: #444;
+  }
+  body.dark #themeToggle .toggle-circle {
+    background: #eee;
+    transform: translateX(24px);
+  }
+
+  /* Buttons */
+  button {
+    background-color: #d4af37;
+    border: none;
+    border-radius: 4px;
+    color: #222;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 10px 18px;
+    margin: 10px 0 25px 0;
+    transition: background-color 0.3s ease;
+    font-size: 1rem;
+  }
+  button:hover, button:focus {
+    background-color: #b89528;
+    outline: none;
+  }
+
+  /* Service container */
+  .service {
+    max-width: 720px;
+    width: 100%;
+    margin-bottom: 60px;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 40px;
+  }
+
+  /* Description */
+  .description {
+    display: none;
+    background: #fffbea;
+    border-left: 4px solid #d4af37;
+    padding: 15px 20px;
+    margin-bottom: 30px;
+    color: #4a4a4a;
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+  .description.active {
+    display: block;
+  }
+
+  /* Tabs container */
+  .tabs {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 25px;
+  }
+  .tabs button {
+    flex: 1;
+    background-color: #f0e6a2;
+    color: #222;
+    font-weight: 600;
+    padding: 10px 0;
+    border-radius: 6px;
+    box-shadow: 0 2px 5px rgb(212 175 55 / 0.3);
+    font-size: 1rem;
+  }
+  .tabs button.active {
+    background-color: #d4af37;
+    color: #222;
+    box-shadow: 0 4px 10px rgb(212 175 55 / 0.7);
+  }
+  .tabs button:hover {
+    background-color: #b89528;
+    color: #111;
+  }
+
+  /* Tab panels */
+  .tab-content {
+    background: #fffbea;
+    border-left: 4px solid #d4af37;
+    padding: 20px;
+    margin-bottom: 30px;
+    font-size: 1rem;
+    color: #4a4a4a;
+  }
+
+  /* Reviews */
+  .reviews {
+    background: #f7f7f7;
+    border-left: 4px solid #d4af37;
+    padding: 20px;
+    margin-bottom: 20px;
+    font-style: italic;
+    color: #555;
+  }
+
+  /* Price */
+  .price {
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: #3c3a36;
+    background: #fffbea;
+    border-left: 4px solid #d4af37;
+    padding: 15px 20px;
+    margin-bottom: 40px;
+  }
+  .price small {
+    font-weight: 400;
+    font-size: 0.85rem;
+    color: #888;
+    margin-left: 10px;
+    font-style: italic;
+  }
+
+  /* Contact section */
+  #contact {
+    max-width: 720px;
+    width: 100%;
+    padding: 30px 20px;
+    background: #222;
+    color: #f7f7f7;
+    border-radius: 6px;
+    margin-bottom: 60px;
+  }
+  #contact h2 {
+    color: #d4af37;
+    margin-bottom: 15px;
+  }
+  #contact p {
+    margin: 6px 0;
+  }
+  #contact a {
+    color: #d4af37;
+    text-decoration: none;
+  }
+  #contact a:hover {
+    text-decoration: underline;
+  }
+
+  /* Dark theme */
+  body.dark {
+    background: #121212;
+    color: #eee;
+  }
+  body.dark h1, body.dark h2, body.dark h3 {
+    color: #f5d742;
+  }
+  body.dark .description,
+  body.dark .tab-content,
+  body.dark .price,
+  body.dark .reviews {
+    background: #222;
+    border-color: #f5d742;
+    color: #ddd;
+  }
+  body.dark button {
+    background-color: #f5d742;
+    color: #222;
+  }
+  body.dark button:hover,
+  body.dark button:focus {
+    background-color: #d4af37;
+  }
+  body.dark .tabs button {
+    background-color: #444;
+    color: #eee;
+    box-shadow: none;
+  }
+  body.dark .tabs button.active {
+    background-color: #f5d742;
+    color: #222;
+    box-shadow: 0 4px 10px rgb(245 215 66 / 0.7);
+  }
+  body.dark .tabs button:hover {
+    background-color: #d4af37;
+    color: #222;
+  }
+  body.dark #contact {
+    background: #333;
+  }
+
+  /* Responsive */
+  @media (max-width: 700px) {
+    .tabs {
+      flex-direction: column;
+    }
+    button {
+      width: 100%;
+    }
+    #logo-container svg {
+      width: 90vw;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- Logo -->
+<div id="logo-container" aria-label="A Star Marketing logo" role="img">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 80" aria-hidden="true" focusable="false">
+    <defs>
+      <linearGradient id="trailCore" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#FFD700" stop-opacity="1"/>
+        <stop offset="100%" stop-color="#FFD700" stop-opacity="0"/>
+      </linearGradient>
+      <linearGradient id="trailGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#FFF6C5" stop-opacity="0.8"/>
+        <stop offset="100%" stop-color="#FFF6C5" stop-opacity="0"/>
+      </linearGradient>
+      <linearGradient id="starGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#FFF6C5"/>
+        <stop offset="50%" stop-color="#FFD700"/>
+        <stop offset="100%" stop-color="#C5A100"/>
+      </linearGradient>
+      <filter id="glow">
+        <feGaussianBlur stdDeviation="2.5" result="blur"/>
+        <feMerge>
+          <feMergeNode in="blur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+    <text x="20" y="60" font-family="Quicksand, Arial, sans-serif" font-size="36" fill="#222" font-weight="bold">
+      A Star Marketing
+    </text>
+    <path d="M45 20 Q200 -10 360 20" stroke="url(#trailGlow)" stroke-width="6" fill="none" stroke-linecap="round" filter="url(#glow)" />
+    <path d="M45 20 Q200 -10 360 20" stroke="url(#trailCore)" stroke-width="3" fill="none" stroke-linecap="round" />
+    <circle cx="90" cy="10" r="2" fill="#FFD700" filter="url(#glow)" />
+    <circle cx="140" cy="5" r="1.5" fill="#FFF" filter="url(#glow)" />
+    <circle cx="190" cy="0" r="2" fill="#FFD700" filter="url(#glow)" />
+    <circle cx="240" cy="5" r="1.5" fill="#FFF" filter="url(#glow)" />
+    <circle cx="290" cy="10" r="2" fill="#FFD700" filter="url(#glow)" />
+    <circle cx="330" cy="15" r="1.5" fill="#FFF" filter="url(#glow)" />
+    <polygon points="45,10 49,20 60,20 51,26 54,37 45,31 36,37 39,26 30,20 41,20"
+      fill="url(#starGradient)" stroke="#A88400" stroke-width="1.2" filter="url(#glow)"
+      transform="rotate(-15,45,20)" />
+  </svg>
+</div>
+
+<!-- Theme toggle -->
+<button id="themeToggle" aria-label="Toggle dark and light theme" aria-pressed="false" role="switch" tabindex="0">
+  <div class="toggle-circle"></div>
+</button>
+
+<!-- Service 1: Individual Emails -->
+<section class="service" id="service1" aria-labelledby="service1-title">
+  <h2 id="service1-title">Individual Emails</h2>
+  <button id="btnDesc1" aria-expanded="false" aria-controls="desc1" aria-haspopup="true" aria-label="Show description for Individual Emails">Show Description</button>
+  <div id="desc1" class="description" role="region" aria-live="polite">
+    <!-- Description text goes here -->
+    <p>Your individual emails are crafted to perfection with engaging content and a clear call to action to boost your marketing success.</p>
+  </div>
+
+  <div class="reviews" aria-label="Customer reviews for Individual Emails">
+    <p>“Great quality emails that increased our open rate!” – Client A</p>
+    <p>“Professional and effective content.” – Client B</p>
+  </div>
+
+  <div class="price" aria-label="Pricing for Individual Emails">
+    £49.99 / £59.99 per email <small>Prices negotiable</small>
+  </div>
+</section>
+
+<!-- Service 2: Basic Flows -->
+<section class="service" id="service2" aria-labelledby="service2-title">
+  <h2 id="service2-title">Basic Flows</h2>
+  <button id="btnDesc2" aria-expanded="false" aria-controls="desc2" aria-haspopup="true" aria-label="Show description for Basic Flows">Show Description</button>
+  <div id="desc2" class="description" role="region" aria-live="polite">
+    <p>We create customized automated flows designed to nurture your customers at every stage of their journey.</p>
+  </div>
+
+  <!-- Tabs for flows -->
+  <nav class="tabs" role="tablist" aria-label="Basic Flows">
+    <button role="tab" aria-selected="true" aria-controls="panel-welcome" id="tab-welcome" class="active" tabindex="0">Welcome flow</button>
+    <button role="tab" aria-selected="false" aria-controls="panel-browse" id="tab-browse" tabindex="-1">Browse abandonment flow</button>
+    <button role="tab" aria-selected="false" aria-controls="panel-cart" id="tab-cart" tabindex="-1">Cart abandonment flow</button>
+    <button role="tab" aria-selected="false" aria-controls="panel-post" id="tab-post" tabindex="-1">Post purchase flow</button>
+    <button role="tab" aria-selected="false" aria-controls="panel-winback" id="tab-winback" tabindex="-1">Winback / Cross sell flow</button>
+  </nav>
+
+  <!-- Flow descriptions -->
+  <div id="panel-welcome" class="tab-content" role="tabpanel" aria-labelledby="tab-welcome">
+    <p>Welcome flows help you make a strong first impression and build lasting customer relationships.</p>
+    <div class="reviews" aria-label="Reviews for Welcome flow">
+      <p>“Our welcome flow boosted engagement by 35%!” – Client C</p>
+    </div>
+  </div>
+  <div id="panel-browse" class="tab-content" role="tabpanel" aria-labelledby="tab-browse" hidden>
+    <p>Browse abandonment flows gently remind visitors to come back and complete their shopping.</p>
+    <div class="reviews" aria-label="Reviews for Browse abandonment flow">
+      <p>“Recovered many lost sales thanks to this flow.” – Client D</p>
+    </div>
+  </div>
+  <div id="panel-cart" class="tab-content" role="tabpanel" aria-labelledby="tab-cart" hidden>
+    <p>Cart abandonment flows help reduce drop-offs and recover abandoned carts effectively.</p>
+    <div class="reviews" aria-label="Reviews for Cart abandonment flow">
+      <p>“Cart recovery rate improved by 40%.” – Client E</p>
+    </div>
+  </div>
+  <div id="panel-post" class="tab-content" role="tabpanel" aria-labelledby="tab-post" hidden>
+    <p>Post purchase flows keep your customers engaged and encourage repeat purchases.</p>
+    <div class="reviews" aria-label="Reviews for Post purchase flow">
+      <p>“Our repeat sales increased with these emails.” – Client F</p>
+    </div>
+  </div>
+  <div id="panel-winback" class="tab-content" role="tabpanel" aria-labelledby="tab-winback" hidden>
+    <p>Winback and cross-sell flows help re-engage old customers and increase average order value.</p>
+    <div class="reviews" aria-label="Reviews for Winback / Cross sell flow">
+      <p>“Excellent at bringing customers back.” – Client G</p>
+    </div>
+  </div>
+
+  <div class="price" aria-label="Pricing for Basic Flows">
+    £199.99 / £239.99 per flow <small>Prices negotiable</small>
+  </div>
+</section>
+
+<!-- Service 3: Campaigns -->
+<section class="service" id="service3" aria-labelledby="service3-title">
+  <h2 id="service3-title">Campaigns</h2>
+  <button id="btnDesc3" aria-expanded="false" aria-controls="desc3" aria-haspopup="true" aria-label="Show description for Campaigns">Show Description</button>
+  <div id="desc3" class="description" role="region" aria-live="polite">
+    <p>Our campaigns are tailored to create impact with targeted offers and timely messages that drive conversions.</p>
+  </div>
+
+  <!-- Tabs for campaigns -->
+  <nav class="tabs" role="tablist" aria-label="Campaign types">
+    <button role="tab" aria-selected="true" aria-controls="panel-sale" id="tab-sale" class="active" tabindex="0">Sale campaign</button>
+    <button role="tab" aria-selected="false" aria-controls="panel-blackfriday" id="tab-blackfriday" tabindex="-1">Black Friday campaign</button>
+    <button role="tab" aria-selected="false" aria-controls="panel-cybermonday" id="tab-cybermonday" tabindex="-1">Cyber Monday campaign</button>
+    <button role="tab" aria-selected="false" aria-controls="panel-christmas" id="tab-christmas" tabindex="-1">Christmas campaign</button>
+  </nav>
+
+  <!-- Campaign descriptions -->
+  <div id="panel-sale" class="tab-content" role="tabpanel" aria-labelledby="tab-sale">
+    <p>Sale campaigns are designed to boost sales quickly with compelling offers.</p>
+    <div class="reviews" aria-label="Reviews for Sale campaign">
+      <p>“Our sale campaign increased revenue by 50%.” – Client H</p>
+    </div>
+  </div>
+  <div id="panel-blackfriday" class="tab-content" role="tabpanel" aria-labelledby="tab-blackfriday" hidden>
+    <p>Black Friday campaigns attract high traffic and big conversions during the busiest shopping day of the year.</p>
+    <div class="reviews" aria-label="Reviews for Black Friday campaign">
+      <p>“Record-breaking sales thanks to this campaign.” – Client I</p>
+    </div>
+  </div>
+  <div id="panel-cybermonday" class="tab-content" role="tabpanel" aria-labelledby="tab-cybermonday" hidden>
+    <p>Cyber Monday campaigns target digital shoppers with exclusive online deals.</p>
+    <div class="reviews" aria-label="Reviews for Cyber Monday campaign">
+      <p>“Excellent digital reach and engagement.” – Client J</p>
+    </div>
+  </div>
+  <div id="panel-christmas" class="tab-content" role="tabpanel" aria-labelledby="tab-christmas" hidden>
+    <p>Christmas campaigns bring festive spirit and increase brand loyalty during the holidays.</p>
+    <div class="reviews" aria-label="Reviews for Christmas campaign">
+      <p>“Beautifully crafted and very effective.” – Client K</p>
+    </div>
+  </div>
+
+  <div class="price" aria-label="Pricing for Campaigns">
+    £299.99 / £349.99 per campaign <small>Prices negotiable</small>
+  </div>
+</section>
+
+<!-- Contact Info -->
+<section id="contact" aria-label="Contact information">
+  <h2>Contact Us</h2>
+  <p>Ready to boost your marketing? Reach out today!</p>
+  <p>Email: <a href="mailto:info@astar.marketing">info@astar.marketing</a></p>
+  <p>Phone: <a href="tel:+441234567890">+44 1234 567 890</a></p>
+</section>
+
+<script>
+  // Dark/Light toggle
+  const themeToggle = document.getElementById('themeToggle');
+  themeToggle.addEventListener('click', () => {
+    document.body.classList.toggle('dark');
+    const isDark = document.body.classList.contains('dark');
+    themeToggle.setAttribute('aria-pressed', isDark);
+  });
+
+  // Show/hide descriptions
+  function toggleDescription(btnId, descId) {
+    const btn = document.getElementById(btnId);
+    const desc = document.getElementById(descId);
+    btn.addEventListener('click', () => {
+      const isActive = desc.classList.toggle('active');
+      btn.textContent = isActive ? 'Hide Description' : 'Show Description';
+      btn.setAttribute('aria-expanded', isActive);
+    });
+  }
+  toggleDescription('btnDesc1', 'desc1');
+  toggleDescription('btnDesc2', 'desc2');
+  toggleDescription('btnDesc3', 'desc3');
+
+  // Tabs functionality for flows and campaigns
+  function setupTabs(serviceId) {
+    const service = document.getElementById(serviceId);
+    const tabs = service.querySelectorAll('[role="tab"]');
+    const panels = service.querySelectorAll('[role="tabpanel"]');
+
+    tabs.forEach((tab, i) => {
+      tab.addEventListener('click', () => {
+        // Deactivate all tabs and hide panels
+        tabs.forEach(t => {
+          t.classList.remove('active');
+          t.setAttribute('aria-selected', 'false');
+          t.setAttribute('tabindex', '-1');
+        });
+        panels.forEach(p => p.hidden = true);
+
+        // Activate clicked tab and show panel
+        tab.classList.add('active');
+        tab.setAttribute('aria-selected', 'true');
+        tab.setAttribute('tabindex', '0');
+        const panelId = tab.getAttribute('aria-controls');
+        const panel = document.getElementById(panelId);
+        if (panel) panel.hidden = false;
+        tab.focus();
+      });
+
+      // Keyboard navigation (left/right arrows)
+      tab.addEventListener('keydown', e => {
+        let newIndex;
+        if (e.key === 'ArrowRight') {
+          newIndex = (i + 1) % tabs.length;
+          tabs[newIndex].click();
+        } else if (e.key === 'ArrowLeft') {
+          newIndex = (i - 1 + tabs.length) % tabs.length;
+          tabs[newIndex].click();
+        }
+      });
+    });
+  }
+  setupTabs('service2'); // Basic Flows tabs
+  setupTabs('service3'); // Campaigns tabs
+</script>
+
+</body>
+</html>
